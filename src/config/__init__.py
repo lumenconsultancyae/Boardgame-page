@@ -1,0 +1,1 @@
+"""Typed configuration leaf package."""

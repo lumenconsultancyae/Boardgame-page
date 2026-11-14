@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Boardgame Hub — Collection Tracker, Visual Rule Diagrams &amp; UAE Events</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="top-header" role="banner">
+      <div class="brand-group">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="4"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"></circle>
+            <circle cx="15.5" cy="8.5" r="1.5" fill="currentColor"></circle>
+            <circle cx="12" cy="12" r="1.5" fill="currentColor"></circle>
+            <circle cx="8.5" cy="15.5" r="1.5" fill="currentColor"></circle>
+            <circle cx="15.5" cy="15.5" r="1.5" fill="currentColor"></circle>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">Boardgame Hub</h1>
+          <p class="brand-subtitle">Personal Game Tracker • Visual Rule Flowcharts • WhatsApp Share • UAE Community Events</p>
+        </div>
+      </div>
+
+      <nav class="primary-nav" role="navigation" aria-label="Main workspace sections">
+        <button type="button" class="nav-tab active" data-tab="collection" data-testid="tab-collection">
+          Collection &amp; Plays
+        </button>
+        <button type="button" class="nav-tab" data-tab="rules" data-testid="tab-rules">
+          Rule Summaries &amp; Diagrams
+        </button>
+        <button type="button" class="nav-tab" data-tab="analytics" data-testid="tab-analytics">
+          Graphs &amp; Analytics
+        </button>
+        <button type="button" class="nav-tab" data-tab="events" data-testid="tab-events">
+          UAE Events
+        </button>
+      </nav>
+    </header>
+
+    <div id="toast-banner" class="toast-banner hidden" role="status" aria-live="polite" data-testid="toast-banner"></div>
+
+    <main class="main-workspace" role="main">
+      <!-- SECTION 1: COLLECTION & PLAY TRACKER -->
+      <section id="view-collection" class="workspace-view" data-testid="view-collection">
+        <div class="toolbar-panel">
+          <div class="filter-controls">
+            <label class="control-group">
+              <span class="control-label">Status</span>
+              <select id="filter-status" class="select-input" data-testid="filter-status">
+                <option value="">All Statuses</option>
+                <option value="owned">Owned</option>
+                <option value="played">Played</option>
+                <option value="wishlist">Wishlist</option>
+              </select>
+            </label>
+            <label class="control-group">
+              <span class="control-label">Player Count</span>
+              <select id="filter-players" class="select-input" data-testid="filter-players">
+                <option value="">Any Players</option>
+                <option value="1">1 Player (Solo)</option>
+                <option value="2">2 Players</option>
+                <option value="3">3 Players</option>
+                <option value="4">4 Players</option>
+                <option value="5">5+ Players</option>
+              </select>
+            </label>
+            <label class="control-group">
+              <span class="control-label">Max Duration</span>
+              <select id="filter-playtime" class="select-input" data-testid="filter-playtime">
+                <option value="">Any Duration</option>
+                <option value="30">Quick (&le; 30m)</option>
+                <option value="60">Standard (&le; 60m)</option>
+                <option value="90">Medium (&le; 90m)</option>
+                <option value="120">Long (&le; 120m)</option>
+              </select>
+            </label>
+            <label class="control-group">
+              <span class="control-label">Max Complexity</span>
+              <select id="filter-complexity" class="select-input" data-testid="filter-complexity">
+                <option value="">Any Weight</option>
+                <option value="2.0">Light (&le; 2.0)</option>
+                <option value="3.2">Medium (&le; 3.2)</option>
+                <option value="5.0">Heavy (&le; 5.0)</option>
+              </select>
+            </label>
+            <label class="control-group search-group">
+              <span class="control-label">Search Title / Mechanic</span>
+              <input
+                type="search"
+                id="filter-search"
+                class="text-input"
+                placeholder="e.g., Catan, Deck Building, Trading..."
+                data-testid="filter-search"
+              />
+            </label>
+          </div>
+
+          <div class="action-controls">
+            <button type="button" id="btn-share-list-whatsapp" class="btn btn-whatsapp" data-testid="btn-share-list-whatsapp">
+              Share Game List on WhatsApp
+            </button>
+            <button type="button" id="btn-toggle-log-session" class="btn btn-secondary" data-testid="btn-toggle-log-session">
+              + Log Play Session
+            </button>
+            <button type="button" id="btn-toggle-add-game" class="btn btn-primary" data-testid="btn-toggle-add-game">
+              + Add Game
+            </button>
+          </div>
+        </div>
+
+        <!-- Inline Collapsible Form: Add New Game -->
+        <form id="form-add-game" class="inline-drawer hidden" data-testid="form-add-game" novalidate>
+          <div class="drawer-header">
+            <h2 class="drawer-title">Add Board Game to Collection</h2>
+            <button type="button" id="btn-cancel-add-game" class="btn btn-ghost">Close</button>
+          </div>
+          <div class="form-grid">
+            <label class="control-group">
+              <span class="control-label">Game Title *</span>
+              <input type="text" id="game-title-input" class="text-input" required aria-describedby="game-title-error" placeholder="e.g., Brass: Birmingham" data-testid="game-title-input" />
+              <span id="game-title-error" class="field-error hidden" data-testid="game-title-error">Game title is required.</span>
+            </label>
+            <label class="control-group">
+              <span class="control-label">Subtitle / Tagline</span>
+              <input type="text" id="game-subtitle-input" class="text-input" placeholder="Industrial network &amp; market strategy" data-testid="game-subtitle-input" />
+            </label>
+            <label class="control-group">
+              <span class="control-label">Collection Status</span>
+              <select id="game-status-input" class="select-input" data-testid="game-status-input">
+                <option value="owned">Owned</option>
+                <option value="wishlist">Wishlist</option>
+                <option value="played">Played</option>
+              </select>
+            </label>
+            <label class="control-group">
+              <span class="control-label">Min Players</span>
+              <input type="number" id="game-min-players-input" class="text-input" value="2" min="1" max="12" data-testid="game-min-players-input" />
+            </label>
+            <label class="control-group">
+              <span class="control-label">Max Players</span>
+              <input type="number" id="game-max-players-input" class="text-input" value="4" min="1" max="20" data-testid="game-max-players-input" />
+            </label>
+            <label class="control-group">
+              <span class="control-label">Max Playtime (mins)</span>
+              <input type="number" id="game-playtime-input" class="text-input" value="60" min="10" max="480" data-testid="game-playtime-input" />
+            </label>
+            <label class="control-group">
+              <span class="control-label">Complexity (1.0–5.0)</span>
+              <input type="number" id="game-complexity-input" class="text-input" value="2.5" min="1.0" max="5.0" step="0.1" data-testid="game-complexity-input" />
+            </label>
+            <label class="control-group">
+              <span class="control-label">Mechanics (comma-separated)</span>
+              <input type="text" id="game-mechanics-input" class="text-input" placeholder="Network Building, Hand Management" data-testid="game-mechanics-input" />
+            </label>
+            <label class="control-group full-span">
+              <span class="control-label">Setup Steps (one per line or semicolon-separated)</span>
+              <input type="text" id="game-setup-input" class="text-input" placeholder="Place board centrally; Deal 8 cards to each player" data-testid="game-setup-input" />
+            </label>
+          </div>
+          <div class="drawer-footer">
+            <button type="submit" class="btn btn-primary" data-testid="btn-submit-game">Save Game to Collection</button>
+          </div>
+        </form>
+
+        <!-- Inline Collapsible Form: Log Play Session -->
+        <form id="form-log-session" class="inline-drawer hidden" data-testid="form-log-session" novalidate>
+          <div class="drawer-header">
+            <h2 class="drawer-title">Log a Play Session</h2>
+            <button type="button" id="btn-cancel-log-session" class="btn btn-ghost">Close</button>
+          </div>
+          <div class="form-grid">
+            <label class="control-group">
+              <span class="control-label">Board Game *</span>
+              <select id="session-game-input" class="select-input" data-testid="session-game-input"></select>
+            </label>
+            <label class="control-group">
+              <span class="control-label">Players (comma-separated) *</span>
+              <input type="text" id="session-players-input" class="text-input" required aria-describedby="session-players-error" placeholder="Khalid, Mariam, Omar" data-testid="session-players-input" />
+              <span id="session-players-error" class="field-error hidden" data-testid="session-players-error">Enter at least one player name.</span>
+            </label>
+            <label class="control-group">
+              <span class="control-label">Winner *</span>
+              <input type="text" id="session-winner-input" class="text-input" placeholder="Mariam" data-testid="session-winner-input" />
+            </label>
+            <label class="control-group">
+              <span class="control-label">Player Scores (Name: Score)</span>
+              <input type="text" id="session-scores-input" class="text-input" placeholder="Mariam: 11, Khalid: 9" data-testid="session-scores-input" />
+            </label>
+            <label class="control-group">
+              <span class="control-label">Duration (mins)</span>
+              <input type="number" id="session-duration-input" class="text-input" value="60" min="5" max="600" data-testid="session-duration-input" />
+            </label>
+            <label class="control-group">
+              <span class="control-label">Location / Café</span>
+              <input type="text" id="session-location-input" class="text-input" value="Unwind Specialty Boardgame Cafe, Dubai" data-testid="session-location-input" />
+            </label>
+            <label class="control-group">
+              <span class="control-label">Session Notes</span>
+              <input type="text" id="session-notes-input" class="text-input" placeholder="Great comeback on the final round!" data-testid="session-notes-input" />
+            </label>
+          </div>
+          <div class="drawer-footer">
+            <button type="submit" class="btn btn-primary" data-testid="btn-submit-session">Record Play Session</button>
+          </div>
+        </form>
+
+        <div class="collection-split-grid">
+          <div class="catalog-column">
+            <div class="section-heading-row">
+              <h2 class="section-title">Board Game Catalog (<span id="catalog-count" class="tabular-nums">0</span>)</h2>
+              <span class="section-hint">Click any game's "Rule Diagram" to open its visual flowchart for friends</span>
+            </div>
+            <div id="games-grid" class="games-grid" data-testid="games-grid"></div>
+          </div>
+
+          <aside class="sessions-column" aria-label="Logged Play Sessions">
+            <div class="section-heading-row">
+              <h2 class="section-title">Recent Play Log (<span id="sessions-count" class="tabular-nums">0</span>)</h2>
+            </div>
+            <div id="sessions-list" class="sessions-list" data-testid="sessions-list"></div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- SECTION 2: VISUAL RULE SUMMARIES & INTERACTIVE DIAGRAMS -->
+      <section id="view-rules" class="workspace-view hidden" data-testid="view-rules">
+        <div class="toolbar-panel">
+          <div class="filter-controls">
+            <label class="control-group">
+              <span class="control-label">Select Game to Teach / Share</span>
+              <select id="rules-game-select" class="select-input" data-testid="rules-game-select"></select>
+            </label>
+            <div id="rules-meta-badges" class="meta-badges-row" data-testid="rules-meta-badges"></div>
+          </div>
+          <div class="action-controls">
+            <button type="button" id="btn-rules-whatsapp" class="btn btn-whatsapp" data-testid="btn-rules-whatsapp">
+              Share Rule Summary on WhatsApp
+            </button>
+          </div>
+        </div>
+
+        <div class="rules-diagram-card">
+          <div class="section-heading-row">
+            <div>
+              <h2 id="rules-diagram-title" class="section-title" data-testid="rules-diagram-title">Interactive Setup &amp; Turn-Order Flowchart</h2>
+              <p id="rules-diagram-subtitle" class="section-hint">Click any flowchart step below to inspect detailed phase rules</p>
+            </div>
+          </div>
+          <div id="rules-svg-container" class="svg-flowchart-wrapper" data-testid="rules-svg-diagram"></div>
+          <div id="rules-node-inspector" class="node-inspector-panel" data-testid="rules-node-inspector"></div>
+        </div>
+
+        <div class="rules-three-col">
+          <article class="rule-box">
+            <h3 class="rule-box-title">1. Table Setup Checklist</h3>
+            <ol id="rules-setup-list" class="rule-ordered-list" data-testid="rules-setup-list"></ol>
+          </article>
+          <article class="rule-box">
+            <h3 class="rule-box-title">2. Turn-by-Turn Phase Breakdown</h3>
+            <div id="rules-phases-list" class="rule-phases-stack" data-testid="rules-phases-list"></div>
+          </article>
+          <article class="rule-box">
+            <h3 class="rule-box-title">3. Scoring &amp; Teach Tips</h3>
+            <ul id="rules-scoring-list" class="rule-bullet-list" data-testid="rules-scoring-list"></ul>
+            <div class="tips-divider"></div>
+            <h4 class="tips-subheading">First-Game Teach Tips</h4>
+            <ul id="rules-tips-list" class="rule-bullet-list" data-testid="rules-tips-list"></ul>
+          </article>
+        </div>
+
+        <details class="mermaid-disclosure">
+          <summary>View Exportable Mermaid v11 Flowchart Syntax</summary>
+          <pre id="rules-mermaid-code" class="code-block" data-testid="rules-mermaid-code"></pre>
+        </details>
+      </section>
+
+      <!-- SECTION 3: COLLECTION ANALYTICS & GRAPHS -->
+      <section id="view-analytics" class="workspace-view hidden" data-testid="view-analytics">
+        <div id="analytics-kpis" class="kpi-strip" data-testid="analytics-kpis"></div>
+
+        <div class="analytics-charts-grid">
+          <article class="chart-card" data-testid="chart-complexity">
+            <h2 class="section-title">Complexity Weight Distribution</h2>
+            <p class="section-hint">Breakdown across Light (1.0–2.0), Medium (2.1–3.2), and Heavy (3.3–5.0) games</p>
+            <div id="chart-complexity-bars" class="chart-bars"></div>
+          </article>
+
+          <article class="chart-card" data-testid="chart-player-counts">
+            <h2 class="section-title">Player-Count Coverage</h2>
+            <p class="section-hint">How many games in your collection support each group size</p>
+            <div id="chart-players-bars" class="chart-bars"></div>
+          </article>
+
+          <article class="chart-card" data-testid="chart-mechanics">
+            <h2 class="section-title">Core Game Mechanics Graph</h2>
+            <p class="section-hint">Most frequent tabletop mechanics across your catalog</p>
+            <div id="chart-mechanics-bars" class="chart-bars"></div>
+          </article>
+
+          <article class="chart-card" data-testid="chart-top-played">
+            <h2 class="section-title">Most-Played Games Leaderboard</h2>
+            <p class="section-hint">Ranked by total play sessions and personal rating</p>
+            <div id="chart-top-played-bars" class="chart-bars"></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- SECTION 4: UAE BOARDGAME EVENTS TRACKER -->
+      <section id="view-events" class="workspace-view hidden" data-testid="view-events">
+        <div class="toolbar-panel">
+          <div class="filter-controls">
+            <label class="control-group">
+              <span class="control-label">UAE Emirate</span>
+              <select id="filter-emirate" class="select-input" data-testid="filter-emirate">
+                <option value="">All UAE Emirates</option>
+                <option value="Dubai">Dubai</option>
+                <option value="Abu Dhabi">Abu Dhabi</option>
+                <option value="Sharjah">Sharjah</option>
+                <option value="Ajman">Ajman</option>
+                <option value="Ras Al Khaimah">Ras Al Khaimah</option>
+                <option value="Fujairah">Fujairah</option>
+                <option value="Umm Al Quwain">Umm Al Quwain</option>
+              </select>
+            </label>
+            <label class="control-group search-group">
+              <span class="control-label">Search Venue / Game</span>
+              <input
+                type="search"
+                id="filter-event-search"
+                class="text-input"
+                placeholder="e.g., Al Barsha, Yas Island, Azul..."
+                data-testid="filter-event-search"
+              />
+            </label>
+          </div>
+          <div class="action-controls">
+            <button type="button" id="btn-toggle-add-event" class="btn btn-primary" data-testid="btn-toggle-add-event">
+              + Host UAE Boardgame Event
+            </button>
+          </div>
+        </div>
+
+        <!-- Inline Collapsible Form: Host UAE Event -->
+        <form id="form-add-event" class="inline-drawer hidden" data-testid="form-add-event" novalidate>
+          <div class="drawer-header">
+            <h2 class="drawer-title">Host a UAE Boardgame Meetup or Tournament</h2>
+            <button type="button" id="btn-cancel-add-event" class="btn btn-ghost">Close</button>
+          </div>
+          <div class="form-grid">
+            <label class="control-group">
+              <span class="control-label">Event Title *</span>
+              <input type="text" id="event-title-input" class="text-input" required aria-describedby="event-title-error" placeholder="e.g., JLT Strategy Night" data-testid="event-title-input" />
+              <span id="event-title-error" class="field-error hidden" data-testid="event-title-error">Event title and venue are required.</span>
+            </label>
+            <label class="control-group">
+              <span class="control-label">Emirate *</span>
+              <select id="event-emirate-input" class="select-input" data-testid="event-emirate-input">
+                <option value="Dubai">Dubai</option>
+                <option value="Abu Dhabi">Abu Dhabi</option>
+                <option value="Sharjah">Sharjah</option>
+                <option value="Ajman">Ajman</option>
+                <option value="Ras Al Khaimah">Ras Al Khaimah</option>
+                <option value="Fujairah">Fujairah</option>
+                <option value="Umm Al Quwain">Umm Al Quwain</option>
+              </select>
+            </label>
+            <label class="control-group">
+              <span class="control-label">Venue / Café *</span>
+              <input type="text" id="event-venue-input" class="text-input" required aria-describedby="event-title-error" placeholder="e.g., Unwind Cafe, Dubai" data-testid="event-venue-input" />
+            </label>
+            <label class="control-group">
+              <span class="control-label">Date</span>
+              <input type="date" id="event-date-input" class="text-input" value="2026-12-05" data-testid="event-date-input" />
+            </label>
+            <label class="control-group">
+              <span class="control-label">Start Time (GST)</span>
+              <input type="text" id="event-time-input" class="text-input" value="18:30" data-testid="event-time-input" />
+            </label>
+            <label class="control-group">
+              <span class="control-label">Max Players</span>
+              <input type="number" id="event-max-players-input" class="text-input" value="16" min="2" max="100" data-testid="event-max-players-input" />
+            </label>
+            <label class="control-group">
+              <span class="control-label">Featured Games (comma-separated)</span>
+              <input type="text" id="event-games-input" class="text-input" value="Catan, Wingspan" data-testid="event-games-input" />
+            </label>
+            <label class="control-group">
+              <span class="control-label">Description</span>
+              <input type="text" id="event-desc-input" class="text-input" value="Friendly boardgame meetup with rule diagrams provided." data-testid="event-desc-input" />
+            </label>
+          </div>
+          <div class="drawer-footer">
+            <button type="submit" class="btn btn-primary" data-testid="btn-submit-event">Publish UAE Event</button>
+          </div>
+        </form>
+
+        <div id="events-grid" class="events-grid" data-testid="events-grid"></div>
+      </section>
+    </main>
+
+    <!-- WHATSAPP SHARE PREVIEW DRAWER -->
+    <aside
+      id="whatsapp-share-drawer"
+      class="whatsapp-drawer hidden"
+      role="dialog"
+      aria-modal="false"
+      aria-labelledby="whatsapp-drawer-title"
+      data-testid="whatsapp-share-drawer"
+    >
+      <div class="whatsapp-drawer-header">
+        <h2 id="whatsapp-drawer-title" class="drawer-title">WhatsApp Message Ready to Share</h2>
+        <button type="button" id="btn-close-whatsapp-drawer" class="btn btn-ghost" data-testid="btn-close-whatsapp-drawer">
+          Close
+        </button>
+      </div>
+      <pre id="whatsapp-preview-text" class="whatsapp-preview-box" data-testid="whatsapp-preview-text"></pre>
+      <div class="whatsapp-drawer-actions">
+        <button type="button" id="btn-copy-whatsapp" class="btn btn-secondary" data-testid="btn-copy-whatsapp">
+          Copy Formatted Text
+        </button>
+        <a
+          id="link-open-whatsapp"
+          href="https://wa.me/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-whatsapp"
+          data-testid="link-open-whatsapp"
+        >
+          Send via WhatsApp (wa.me)
+        </a>
+      </div>
+    </aside>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

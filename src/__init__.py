@@ -1,0 +1,1 @@
+"""Boardgame Page application package."""
